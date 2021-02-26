@@ -18,6 +18,9 @@ public class FuzzyBox : MonoBehaviour
 
     public float verticalForceScalar = 1f;
 
+    public float boatMaxTurn = 15f;
+    public float maxDistance = 7f;
+
     void Start()
     {
         engine = new FuzzyEngineFactory().Default();
@@ -25,14 +28,14 @@ public class FuzzyBox : MonoBehaviour
 
         // Here we need to setup the Fuzzy Inference System
         distance = new LinguisticVariable("distance");
-        var rightDistance = distance.MembershipFunctions.AddTriangle("rightDistance", -100, 0, -10);
-        var noneDistance = distance.MembershipFunctions.AddTriangle("noneDistance", -10, -0, 10);
-        var leftDistance = distance.MembershipFunctions.AddTriangle("leftDistance", 10, 0, 100);
+        var rightDistance = distance.MembershipFunctions.AddTriangle("rightDistance", -15, 0, 0);
+        var noneDistance = distance.MembershipFunctions.AddTriangle("noneDistance", -1, 0, 1);
+        var leftDistance = distance.MembershipFunctions.AddTriangle("leftDistance", 0, 0, 15);
 
         direction = new LinguisticVariable("direction");
-        var rightDirection = direction.MembershipFunctions.AddTriangle("rightDirection", -100, 0, -10);
-        var noneDirection = direction.MembershipFunctions.AddTriangle("noneDirection", -10, 0, 10);
-        var leftDirection = direction.MembershipFunctions.AddTriangle("leftDirection", 10, 0, 100);
+        var rightDirection = direction.MembershipFunctions.AddTriangle("rightDirection", -100, 0, 0);
+        var noneDirection = direction.MembershipFunctions.AddTriangle("noneDirection", -15, 0, 15);
+        var leftDirection = direction.MembershipFunctions.AddTriangle("leftDirection", 0, 0, 100);
 
 
         var rule1 = Rule.If(distance.Is(rightDistance)).Then(direction.Is(leftDirection));
@@ -45,45 +48,32 @@ public class FuzzyBox : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!selected)
-        {
-            // Convert position of box to value between 0 and 100
-            double distanceToLine = transform.position.x - lineObject.position.x;
 
-            double result = engine.Defuzzify(new { distance = distanceToLine });
+        // Convert position of box to value between 0 and 100
+        double distanceToLine = transform.position.x - lineObject.position.x;
+        RotateBasedOnDistance((float)distanceToLine);
 
-            Rigidbody rigidbody = GetComponent<Rigidbody>();
-            rigidbody.AddForce(new Vector3((float)(result), 0f, 0f));
-            Debug.Log("Result: " + (float)result);
-        }
+        double result = engine.Defuzzify(new { distance = distanceToLine, });
+
+        Debug.Log("Result: "+ result);
+
+        Rigidbody rigidbody = GetComponent<Rigidbody>();
+        rigidbody.AddForce(new Vector3((float)(result), 0f, 0f));
+
     }
 
-    // Update is called once per frame
-    void Update()
+    void RotateBasedOnDistance(float distance)
     {
-        //if (Input.GetMouseButtonDown(0))
-        //{
-        //    var hit = new RaycastHit();
-        //    var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //Normalize the value to set as multiplier of rotation;
+        //7 just arbitrary maximum distance that the boat is ever going to be at.
+        //float clampedDistance = Mathf.Clamp(distance, -maxDistance, maxDistance);
+        float normalized = distance / maxDistance;
 
-        //    if (Physics.Raycast(ray, out hit))
-        //    {
-        //        if (hit.transform.name == "FuzzyBox") Debug.Log("You have clicked the FuzzyBox");
-        //        selected = true;
-        //    }
-        //}
+        float newRotation = 90f + boatMaxTurn * -normalized;
 
-        //if (Input.GetMouseButton(0) && selected)
-        //{
-        //    float distanceToScreen = Camera.main.WorldToScreenPoint(gameObject.transform.position).z;
-        //    Vector3 curPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distanceToScreen));
-        //    transform.position = new Vector3(curPosition.x, Mathf.Max(0.5f, curPosition.y), transform.position.z);
-        //}
+        transform.eulerAngles = new Vector3(transform.eulerAngles.x, newRotation, transform.eulerAngles.z);
 
-        //if (Input.GetMouseButtonUp(0))
-        //{
-        //    selected = false;
-        //}
+
     }
 
 

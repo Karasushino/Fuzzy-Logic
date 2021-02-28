@@ -139,7 +139,7 @@ GameObject:
   - component: {fileID: 26206257}
   - component: {fileID: 26206259}
   m_Layer: 0
-  m_Name: FuzzyBox
+  m_Name: Boat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -260,13 +260,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 26206252}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f49393ca49a9684394c2eeffab4c924, type: 3}
+  m_Script: {fileID: 11500000, guid: b80a5c0a274a5ef4a8205263d0391b47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   lineObject: {fileID: 228682172}
-  verticalForceScalar: 1
-  boatMaxTurn: 25
-  maxDistance: 4
+  boatMaxTurn: 30
+  maxRotationDistance: 5
+  maxDistance: 9
+  forceScalar: 60
 --- !u!1 &124741774
 GameObject:
   m_ObjectHideFlags: 0
@@ -613,6 +614,7 @@ GameObject:
   m_Component:
   - component: {fileID: 279900824}
   - component: {fileID: 279900825}
+  - component: {fileID: 279900826}
   m_Layer: 0
   m_Name: Line
   m_TagString: Untagged
@@ -642,8 +644,8 @@ LineRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 279900823}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 0
   m_LightProbeUsage: 0
@@ -732,6 +734,19 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 0
   m_Loop: 0
+--- !u!114 &279900826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279900823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c743a8b612816aa418b2d14bee9b21b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  width: 4
 --- !u!1 &282840810
 GameObject:
   m_ObjectHideFlags: 0
@@ -1122,7 +1137,7 @@ GameObject:
   - component: {fileID: 879896601}
   - component: {fileID: 879896600}
   m_Layer: 0
-  m_Name: Le Ground
+  m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6471,7 +6486,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 100000, guid: 780611a67e8e941a2b3aa96e5915a793, type: 3}
       propertyPath: m_Name
-      value: WaterProDaytime
+      value: 'Water Shader '
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 780611a67e8e941a2b3aa96e5915a793, type: 3}
       propertyPath: m_RootOrder

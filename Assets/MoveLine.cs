@@ -23,23 +23,17 @@ public class MoveLine : MonoBehaviour
             if (transform.position.x >= -offLimit)
                 MoveRight(-currentSpeed);
         }
-        if(Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.D))
         {
             if (transform.position.x <= offLimit)
                 MoveRight(currentSpeed);
         }
 
-
-
-
     }
     void MoveRight(float speed)
     {
-      
-            float newPosition = transform.position.x + speed * Time.deltaTime;
-            transform.position = new Vector3(newPosition, transform.position.y, transform.position.z);
-        
-
+        float newPosition = transform.position.x + speed * Time.deltaTime;
+        transform.position = new Vector3(newPosition, transform.position.y, transform.position.z);
     }
 
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 using FLS;
 using FLS.Rules;
 using FLS.MembershipFunctions;
+using UnityEngine.UI;
 
 public class FuzzyBox : MonoBehaviour
 {
@@ -21,6 +22,10 @@ public class FuzzyBox : MonoBehaviour
     public float boatMaxTurn = 15f;
     public float maxRotationDistance = 7f;
     public float maxDistance = 10f;
+
+    [Space(5)]
+    [Header("UI Elements")]
+    Slider []slider;
 
     void Start()
     {
@@ -57,12 +62,15 @@ public class FuzzyBox : MonoBehaviour
 
         double result = engine.Defuzzify(new { distance = distanceToLine, });
 
-        Debug.Log("Result: "+ result);
+        Debug.Log("Result: " + result);
 
         Rigidbody rigidbody = GetComponent<Rigidbody>();
         rigidbody.AddForce(new Vector3((float)(result), 0f, 0f));
 
+
+
     }
+
 
     void RotateBasedOnDistance(float distance)
     {

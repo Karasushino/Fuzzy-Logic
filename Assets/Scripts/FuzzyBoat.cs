@@ -12,22 +12,28 @@ public class FuzzyBoat : MonoBehaviour
 
     IFuzzyEngine engine;
 
+    //Input 
     LinguisticVariable velocity;
     LinguisticVariable distance;
 
     //Output
-    LinguisticVariable stearing;
+    LinguisticVariable Steering;
 
-    public Transform lineObject;
 
+    //Public var
     public float boatMaxTurn = 30f;
     public float maxRotationDistance = 5f;
     public float maxDistance = 9f;
     public float forceScalar = 70f;
     public float maxSpeed = 15f;
 
+    //Boat Rigid body
     Rigidbody body;
 
+    //Line object reference
+    public Transform lineObject;
+
+    //References to UI elements
     [Space(5)]
     [Header("UI Elements")]
     public Slider[] slider;
@@ -35,45 +41,55 @@ public class FuzzyBoat : MonoBehaviour
 
     void Start()
     {
-        engine = new FuzzyEngineFactory().Default();
+        //Monobehaviour Start
+        body = this.gameObject.GetComponent<Rigidbody>();
+        
+        engine = new FuzzyEngineFactory().Create(FuzzyEngineType.CoG);
 
 
         //Input variables
         distance = new LinguisticVariable("distance");
+        velocity = new LinguisticVariable("velocity");
+
+        //Output Variable
+        Steering = new LinguisticVariable("Steering");
+
+        //Input Fuzzy Sets
+
+        //Distance membership functions
         var leftDistance = distance.MembershipFunctions.AddTriangle("leftDistance", -5, -1, -0.1);
         var noneDistance = distance.MembershipFunctions.AddTriangle("noneDistance", -0.15, 0, 0.15);
         var rightDistance = distance.MembershipFunctions.AddTriangle("rightDistance", 0.1, 1, 5);
 
-        velocity = new LinguisticVariable("velocity");
+        //Speed membership functions
         var slow = velocity.MembershipFunctions.AddTriangle("slow", -2, -1, 1);
+        var average = velocity.MembershipFunctions.AddTriangle("average", 0, 0.5, 1);
         var fast = velocity.MembershipFunctions.AddTriangle("fast", -1, 1, 2);
 
-        //Output
-        stearing = new LinguisticVariable("stearing");
-        var strongLeftStearing = stearing.MembershipFunctions.AddTriangle("strongLeftStearing", -2, -1, -0.8);
-        var leftStearing = stearing.MembershipFunctions.AddTriangle("leftStearing", -0.8, -0.5, -0.1);
-        var noneStearing = stearing.MembershipFunctions.AddTriangle("noneStearing", -0.1, 0, 0.1);
-        var rightStearing = stearing.MembershipFunctions.AddTriangle("rightStearing", 0.1, 0.5, 0.8);
+        //Output Fuzzy set
+        //Steering membership functions
+        var strongLeftSteering = Steering.MembershipFunctions.AddTriangle("strongLeftSteering", -2, -1, -0.8);
+        var leftSteering = Steering.MembershipFunctions.AddTriangle("leftSteering", -0.8, -0.5, -0.1);
+        var noneSteering = Steering.MembershipFunctions.AddTriangle("noneSteering", -0.1, 0, 0.1);
+        var rightSteering = Steering.MembershipFunctions.AddTriangle("rightSteering", 0.1, 0.5, 0.8);
+        var strongRightSteering = Steering.MembershipFunctions.AddTriangle("strongRightSteering", 0.8, 1, 2);
 
-        var strongRightStearing = stearing.MembershipFunctions.AddTriangle("strongRightStearing", 0.8, 1, 2);
+
+        //FIS Rules
+        var rule1 = Rule.If(distance.Is(rightDistance)).If(velocity.Is(fast)).Then(Steering.Is(strongLeftSteering));
+        var rule2 = Rule.If(distance.Is(rightDistance)).If(velocity.Is(slow)).Then(Steering.Is(leftSteering));
+        var rule3 = Rule.If(distance.Is(noneDistance)).If(velocity.Is(fast)).Then(Steering.Is(noneSteering));
+        var rule4 = Rule.If(distance.Is(noneDistance)).If(velocity.Is(slow)).Then(Steering.Is(noneSteering));
+        var rule5 = Rule.If(distance.Is(leftDistance)).If(velocity.Is(fast)).Then(Steering.Is(strongRightSteering));
+        var rule6 = Rule.If(distance.Is(leftDistance)).If(velocity.Is(slow)).Then(Steering.Is(rightSteering));
+        var rule7 = Rule.If(distance.Is(noneDistance)).If(velocity.Is(average)).Then(Steering.Is(noneSteering));
+        var rule8 = Rule.If(distance.Is(leftDistance)).If(velocity.Is(average)).Then(Steering.Is(rightSteering));
+        var rule9 = Rule.If(distance.Is(rightDistance)).If(velocity.Is(average)).Then(Steering.Is(leftSteering));
 
 
-        //var rule1 = Rule.If(distance.Is(rightDistance)).Then(stearing.Is(leftStearing));
-        //var rule2 = Rule.If(distance.Is(noneDistance)).Then(stearing.Is(noneStearing));
-        //var rule3 = Rule.If(distance.Is(leftDistance)).Then(stearing.Is(rightStearing));
+        //Add rules to the FIS Engine
+        engine.Rules.Add(rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8,rule9);
 
-        //engine.Rules.Add(rule1, rule2, rule3);
-
-        var rule1 = Rule.If(distance.Is(rightDistance)).If(velocity.Is(fast)).Then(stearing.Is(strongLeftStearing));
-        var rule2 = Rule.If(distance.Is(rightDistance)).If(velocity.Is(slow)).Then(stearing.Is(leftStearing));
-        var rule3 = Rule.If(distance.Is(noneDistance)).If(velocity.Is(fast)).Then(stearing.Is(noneStearing));
-        var rule4 = Rule.If(distance.Is(noneDistance)).If(velocity.Is(slow)).Then(stearing.Is(noneStearing));
-        var rule5 = Rule.If(distance.Is(leftDistance)).If(velocity.Is(fast)).Then(stearing.Is(strongRightStearing));
-        var rule6 = Rule.If(distance.Is(leftDistance)).If(velocity.Is(slow)).Then(stearing.Is(rightStearing));
-
-        engine.Rules.Add(rule1, rule2, rule3, rule4, rule5, rule6);
-
-        body = gameObject.GetComponent<Rigidbody>();
 
     }
 
